@@ -88,7 +88,7 @@ class TestMockAllExecutionListener
     }
 
     /**
-     * Ensure [MockAllExecutionListener.createActualOrSpy] creates an instance object when its not in the spy class list.
+     * Ensure [MockAllExecutionListener.createActualOrSpy] creates an instance object when it's not in the spy class list.
      */
     @Test
     fun testCreateActualOrSpy_createInstance()
@@ -98,7 +98,7 @@ class TestMockAllExecutionListener
     }
 
     /**
-     * Ensure [MockAllExecutionListener.createActualOrSpy] creates a spy object when its in the spy class list.
+     * Ensure [MockAllExecutionListener.createActualOrSpy] creates a spy object when it's in the spy class list.
      */
     @Test
     fun testCreateActualOrSpy_createSpy()
@@ -184,7 +184,7 @@ class TestMockAllExecutionListener
 
     /**
      * Ensure [MockAllExecutionListener.containsChildClass] returns the appropriate child class when the child class
-     * exists in the map but the base class does not and the base class is used for the look up.
+     * exists in the map but the base class does not and the base class is used for the look-up.
      */
     @Test
     fun testContainsChildClass_childCreatedLookedUpByParent()
@@ -198,7 +198,7 @@ class TestMockAllExecutionListener
 
     /**
      * Ensure [MockAllExecutionListener.containsChildClass] returns the child class, when only the child class exists
-     * and the child class is used for the look up.
+     * and the child class is used for the look-up.
      */
     @Test
     fun testContainsChildClass_childCreatedLookedUpByChild()
@@ -212,7 +212,7 @@ class TestMockAllExecutionListener
 
     /**
      * Ensure [MockAllExecutionListener.containsChildClass] returns a random class in the hierarchy when BOTH the parent
-     * and child class exists and the parent is used for a look up.
+     * and child class exists and the parent is used for a look-up.
      * This behaviour would remain similar where the retrieved entities would not be guaranteed if there are multiple that
      * are children or equal to the requested object.
      * You should always use the lowest level object possible in the hierarchy to get consistent results.

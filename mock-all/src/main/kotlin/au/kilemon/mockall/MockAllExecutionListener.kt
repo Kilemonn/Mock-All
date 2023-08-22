@@ -9,6 +9,7 @@ import org.springframework.test.context.TestExecutionListener
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Constructor
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 /**
@@ -25,24 +26,32 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
 
         private val initialisedMocks = HashMap<Class<*>, Any>()
 
+        /**
+         * Gets the existing instance for the provided [Class] from the [initialisedMocks] [HashMap].
+         *
+         * @param clazz the instance type to retrieve from the map
+         * @return the existing object if it exists otherwise <code>null</code>
+         */
         fun getInstance(clazz: Class<*>): Any?
         {
             return initialisedMocks[clazz]
         }
 
+        /**
+         * Checks if there is any child instances of the provided [Class] already defined in the [initialisedMocks].
+         *
+         * @param incomingClazz the provided base or intermediate [Class] to compare against the map to see if any child instances exist
+         * @return the found child [Class] if one matches otherwise <code>null</code>
+         */
         fun containsChildClass(incomingClazz: Class<*>): Class<*>?
         {
             val childClass = initialisedMocks.keys.stream().filter { clazz -> incomingClazz.isAssignableFrom(clazz) }.findFirst()
-            return if (childClass.isPresent)
-            {
-                childClass.get()
-            }
-            else
-            {
-                null
-            }
+            return childClass.getOrNull()
         }
 
+        /**
+         * Clears the underlying [initialisedMocks] using [HashMap.clear].
+         */
         fun clearInitialisedMocks()
         {
             initialisedMocks.clear()
@@ -97,11 +106,22 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
         } while (clazz != Any::class.java)
     }
 
+    /**
+     * Add the provided [KClass] to the underlying [spyKClasses] [Set].
+     *
+     * @param kClazz the [KClass] to add to the set
+     */
     fun addToSpyClasses(kClazz: KClass<*>)
     {
         spyKClasses.add(kClazz)
     }
 
+    /**
+     * Checks if the provided [KClass] exists already in the [spyKClasses] [Set].
+     *
+     * @param kClazz the [KClass] to look up in the set
+     * @return <code>true</code> if the class exists, otherwise <code>false</code>
+     */
     fun containsKClasses(kClazz: KClass<*>): Boolean
     {
         return spyKClasses.contains(kClazz)
@@ -128,12 +148,14 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
                 ReflectionUtils.setField(field, createOrGetInstance(clazz), createActualOrSpy(field.type.kotlin))
                 mockAnnotationFields(field.type)
             }
-
-            val hasAnyInjectionAnnotations = injectableAnnotation.stream().map { annotation -> field.getAnnotation(annotation) }.toList().filterNotNull().isNotEmpty()
-            if (hasAnyInjectionAnnotations)
+            else
             {
-                ReflectionUtils.setField(field, createOrGetInstance(clazz), createOrGetInstance(field.type, spyKClasses.contains(field.type.kotlin)))
-                mockAnnotationFields(field.type)
+                val hasAnyInjectionAnnotations = injectableAnnotation.stream().map { annotation -> field.getAnnotation(annotation) }.toList().filterNotNull().isNotEmpty()
+                if (hasAnyInjectionAnnotations)
+                {
+                    ReflectionUtils.setField(field, createOrGetInstance(clazz), createOrGetInstance(field.type, spyKClasses.contains(field.type.kotlin)))
+                    mockAnnotationFields(field.type)
+                }
             }
         }
     }
