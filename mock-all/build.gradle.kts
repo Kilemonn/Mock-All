@@ -1,14 +1,41 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinTest
-
 plugins {
     kotlin("jvm") version "1.9.0"
     `java-library`
+    `maven-publish`
     jacoco
 }
 
 group = "au.kilemon"
 version = "0.1.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = group.toString()
+            artifactId = rootProject.name
+            version = version
+
+            from(components["java"])
+
+            pom {
+                name.set("Mock All")
+                description.set("An extension library built on-top of mockito used to quickly mock all injected beans.")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("kilemonn")
+                    }
+                }
+            }
+        }
+    }
+}
 
 repositories {
     mavenCentral()
