@@ -3,6 +3,7 @@ package au.kilemon.mockall
 import au.kilemon.mockall.models.BaseClass
 import au.kilemon.mockall.models.ChildClass
 import au.kilemon.mockall.models.ChildChildClass
+import au.kilemon.mockall.models.NotMockedSpy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -285,6 +286,23 @@ class TestMockAllExecutionListener
         Assertions.assertTrue(listener.containsKClasses(Properties::class))
         Assertions.assertNotNull(MockAllExecutionListener.getInstance(Properties::class.java))
         Assertions.assertTrue(isSpy(MockAllExecutionListener.getInstance(Properties::class.java)!!))
+    }
+
+    /**
+     * Ensure that when we use [NotMocked] with the provided property class as an argument that it is constructed and spied.
+     */
+    @Test
+    fun testNotMocked_SpyNotMocked()
+    {
+        val listener = MockAllExecutionListener()
+        val notMockedSpy = NotMockedSpy()
+        listener.prepareTestInstance(initialiseContextWithInstance(notMockedSpy))
+
+        Assertions.assertNotNull(MockAllExecutionListener.getInstance(NotMockedSpy::class.java))
+        Assertions.assertNotNull(MockAllExecutionListener.getInstance(Properties::class.java))
+        Assertions.assertTrue(isSpy(MockAllExecutionListener.getInstance(Properties::class.java)!!))
+        Assertions.assertNotNull(notMockedSpy.properties)
+        Assertions.assertTrue(isSpy(notMockedSpy.properties))
     }
 
     /**
