@@ -19,6 +19,12 @@ testImplementation("com.github.Kilemonn:mock-all:0.1.2")
 
 There are two components to this library that when used together can allow you to control which beans are excempt from the auto mocking and which beans will be created as `spy`s.
 
+Make sure you add the following configuration to your maven/gradle test configuration so that reflection can be used.
+Here is an example for gradle:
+```
+jvmArgs("--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.base/java.lang=ALL-UNNAMED")
+```
+
 ### Mock all
 
 Firstly you need to mark the test class with the following annotation:
