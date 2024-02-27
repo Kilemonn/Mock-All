@@ -52,4 +52,4 @@ Mocked/Spied instances can be requested via the static method:
 MockAllExecutionListener.getInstance(clazz: Class<*>): Any?
 ```
 
-If there is inheritance involved, make sure you provide the exact class name to look up and return from the mock map.
+If there is inheritance involved, there are other utility methods in `MockAllExecutionListener` to work with hierarchy object look up.
