@@ -5,7 +5,7 @@ plugins {
     jacoco
 }
 
-group = "au.kilemon"
+group = "com.github.Kilemonn"
 version = "0.1.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -61,6 +61,10 @@ tasks.test {
     useJUnitPlatform()
     jvmArgs("--add-opens", "java.base/java.util=ALL-UNNAMED",
         "--add-opens", "java.base/java.lang=ALL-UNNAMED")
+}
+
+tasks.withType<Jar> {
+    from(sourceSets["main"].allSource)
 }
 
 kotlin {
