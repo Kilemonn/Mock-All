@@ -4,6 +4,12 @@ import au.kilemon.mockall.models.BaseClass
 import au.kilemon.mockall.models.ChildClass
 import au.kilemon.mockall.models.ChildChildClass
 import au.kilemon.mockall.models.NotMockedSpy
+import au.kilemon.mockall.models.ab.AbstractBaseClass
+import au.kilemon.mockall.models.ab.AbstractChildClass
+import au.kilemon.mockall.tests.AbstractTest
+import au.kilemon.mockall.tests.BaseTest
+import au.kilemon.mockall.tests.ChildChildTest
+import au.kilemon.mockall.tests.ChildTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,11 +43,11 @@ class TestMockAllExecutionListener
     @Test
     fun testPrepareTestInstance_onBaseClass()
     {
-        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(BaseClass()))
+        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(BaseTest()))
 
         val baseClass = MockAllExecutionListener.getInstance(BaseClass::class.java)
         Assertions.assertNotNull(baseClass)
-        Assertions.assertFalse(isMock(baseClass!!))
+        Assertions.assertTrue(isMock(baseClass!!))
         Assertions.assertFalse(isSpy(baseClass))
 
         val properties = MockAllExecutionListener.getInstance(Properties::class.java)
@@ -56,7 +62,7 @@ class TestMockAllExecutionListener
     @Test
     fun testPrepareTestInstance_onChildClass()
     {
-        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(ChildClass()))
+        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(ChildTest()))
 
         Assertions.assertNull(MockAllExecutionListener.getInstance(BaseClass::class.java))
 
@@ -67,7 +73,7 @@ class TestMockAllExecutionListener
 
         val childClass = MockAllExecutionListener.getInstance(ChildClass::class.java)
         Assertions.assertNotNull(childClass)
-        Assertions.assertFalse(isMock(childClass!!))
+        Assertions.assertTrue(isMock(childClass!!))
         Assertions.assertFalse(isSpy(childClass))
 
         val module = MockAllExecutionListener.getInstance(Module::class.java)
@@ -297,6 +303,32 @@ class TestMockAllExecutionListener
     }
 
     /**
+     * Ensure that [MockAllExecutionListener.prepareTestInstance] is able to initialise the members of an abstract parent class.
+     */
+    @Test
+    fun testPrepareTestInstance_onAbstractChildClass()
+    {
+        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(AbstractTest()))
+
+        val childClass = MockAllExecutionListener.getInstance(AbstractChildClass::class.java)
+        Assertions.assertNotNull(childClass)
+        Assertions.assertTrue(isMock(childClass!!))
+        Assertions.assertFalse(isSpy(childClass))
+
+        Assertions.assertNull(MockAllExecutionListener.getInstance(AbstractBaseClass::class.java))
+
+        val packages = MockAllExecutionListener.getInstance(Package::class.java)
+        Assertions.assertNotNull(packages)
+        Assertions.assertTrue(isMock(packages!!))
+        Assertions.assertFalse(isSpy(packages))
+
+        val properties = MockAllExecutionListener.getInstance(Properties::class.java)
+        Assertions.assertNotNull(properties)
+        Assertions.assertTrue(isMock(properties!!))
+        Assertions.assertFalse(isSpy(properties))
+    }
+
+    /**
      * Ensure that when we use [NotMocked] that the annotated property is not available in the map. And that any specified
      * classes are actually created as a spy instead of a mock.
      */
@@ -304,8 +336,7 @@ class TestMockAllExecutionListener
     fun testNotMocked()
     {
         val listener = MockAllExecutionListener()
-        val thirdLevelClass = ChildChildClass()
-        listener.prepareTestInstance(initialiseContextWithInstance(thirdLevelClass))
+        listener.prepareTestInstance(initialiseContextWithInstance(ChildChildTest()))
 
         Assertions.assertNotNull(MockAllExecutionListener.getInstance(ChildChildClass::class.java))
 

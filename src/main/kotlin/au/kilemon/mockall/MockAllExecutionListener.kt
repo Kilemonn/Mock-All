@@ -98,12 +98,8 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
     {
         setTestContext(testContext)
         initialisedMocks[getTestContext().testClass] = getTestContext().testInstance
-        var clazz = getTestContext().testClass
-        do
-        {
-            mockAnnotationFields(clazz)
-            clazz = clazz.superclass
-        } while (clazz != Any::class.java)
+        val clazz = getTestContext().testClass
+        mockAnnotationFields(clazz)
     }
 
     /**
@@ -136,28 +132,33 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
      */
     private fun mockAnnotationFields(clazz: Class<*>)
     {
-        for (field in clazz.declaredFields)
+        var currentClazz = clazz
+        do
         {
-            ReflectionUtils.makeAccessible(field)
-
-            val notMocked: NotMocked? = field.getAnnotation(NotMocked::class.java)
-            if (notMocked != null)
+            for (field in currentClazz.declaredFields)
             {
-                spyKClasses.addAll(notMocked.spyClasses.asList())
+                ReflectionUtils.makeAccessible(field)
 
-                ReflectionUtils.setField(field, createOrGetInstance(clazz), createActualOrSpy(field.type.kotlin))
-                mockAnnotationFields(field.type)
-            }
-            else
-            {
-                val hasAnyInjectionAnnotations = injectableAnnotation.stream().map { annotation -> field.getAnnotation(annotation) }.toList().filterNotNull().isNotEmpty()
-                if (hasAnyInjectionAnnotations)
+                val notMocked: NotMocked? = field.getAnnotation(NotMocked::class.java)
+                if (notMocked != null)
                 {
-                    ReflectionUtils.setField(field, createOrGetInstance(clazz), createOrGetInstance(field.type, spyKClasses.contains(field.type.kotlin)))
+                    spyKClasses.addAll(notMocked.spyClasses.asList())
+
+                    ReflectionUtils.setField(field, createOrGetInstance(currentClazz), createActualOrSpy(field.type.kotlin))
                     mockAnnotationFields(field.type)
                 }
+                else
+                {
+                    val hasAnyInjectionAnnotations = injectableAnnotation.stream().map { annotation -> field.getAnnotation(annotation) }.toList().filterNotNull().isNotEmpty()
+                    if (hasAnyInjectionAnnotations)
+                    {
+                        ReflectionUtils.setField(field, createOrGetInstance(currentClazz), createOrGetInstance(field.type, spyKClasses.contains(field.type.kotlin)))
+                        mockAnnotationFields(field.type)
+                    }
+                }
             }
-        }
+            currentClazz = currentClazz.superclass
+        } while (currentClazz != Any::class.java)
     }
 
     /**
