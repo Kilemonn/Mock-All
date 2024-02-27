@@ -220,7 +220,7 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
     }
 
     /**
-     * Create the provided [Class] T instance as either a [Mockito.mock]
+     * Create the provided [Class] T instance as either a [Mockito.mock] or a [Mockito.spy].
      */
     fun <T : Any> createOrGetInstance(clazz: Class<T>, createSpy: Boolean = false): T
     {
