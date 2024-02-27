@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.Kilemonn"
-version = "0.1.2" // Make sure this version matches the release version in the repo
+version = "0.1.3" // Make sure this version matches the release version in the repo
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
@@ -43,16 +43,17 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api
+    // Needed to support legacy Resource annotation
     implementation("javax.annotation:javax.annotation-api:1.3.2")
 
     // https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api
     implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-    implementation("org.springframework.boot:spring-boot-starter-test:3.1.2")
+    implementation("org.springframework.boot:spring-boot-starter-test:3.2.3")
 
-    testImplementation("org.mockito:mockito-inline:5.1.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
 
     testImplementation(kotlin("test"))
 }

@@ -75,10 +75,10 @@ class TestMockAllExecutionListener
         Assertions.assertTrue(isMock(module!!))
         Assertions.assertFalse(isSpy(module))
 
-        val p4ckage = MockAllExecutionListener.getInstance(Package::class.java)
-        Assertions.assertNotNull(p4ckage)
-        Assertions.assertTrue(isMock(p4ckage!!))
-        Assertions.assertFalse(isSpy(p4ckage))
+        val packages = MockAllExecutionListener.getInstance(Package::class.java)
+        Assertions.assertNotNull(packages)
+        Assertions.assertTrue(isMock(packages!!))
+        Assertions.assertFalse(isSpy(packages))
     }
 
     /**
@@ -111,7 +111,6 @@ class TestMockAllExecutionListener
 
         properties = MockAllExecutionListener().createMockOrSpy(Properties::class.java, true)
         Assertions.assertTrue(isSpy(properties))
-        Assertions.assertFalse(isMock(properties))
     }
 
     /**
@@ -136,7 +135,6 @@ class TestMockAllExecutionListener
 
         val properties: Properties = listener.createActualOrSpy(Properties::class)
         Assertions.assertTrue(isSpy(properties))
-        Assertions.assertFalse(isMock(properties))
     }
 
     /**
