@@ -40,6 +40,8 @@ If you want to skip wiring of any object you can add this annotation to that mem
 @NotMocked
 ```
 
+Currently these objects annotated with `@NotMocked` will be created via its default zero argument constructor.
+
 ### Initialise as Spy
 
 Similarly to how objects are marked to be created as actual objects, you can provide a list of classes that should be initialised as spy objects instead of mocks during the initialisation.
@@ -52,7 +54,7 @@ Please refer to the unit tests for examples of how this mocking is put into acti
 **NOTE: The following will result in "MyObject" being created as a spy because it is provided in the spy object list.**
 ```java
 @Autowired
-@NotMocked([MyObject.class, RoleChecker.class])
+@NotMocked([MyObject.class])
 private MyObject obj;
 ```
 
