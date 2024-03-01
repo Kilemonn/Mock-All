@@ -1,23 +1,20 @@
 # Mock-All
 
-A utility library built on top of [Mockito](https://github.com/mockito/mockito) to simplify context initialisation for test classes.
-Ideally this library should not be required, but in scenarios where you want to setup isolated test environments quickly this is an option.
-
-By default any marked tests will have all Spring wired objects mocked unless specified otherwise.
+A test mock utility library built on top of [Mockito](https://github.com/mockito/mockito) to simplify context configuration for test classes.
+Ideally this library should not be required, but in scenarios where you want to setup isolated test configurations quickly this is an option especially when working with existing code with limited tests.
 
 ## Including Dependency
 
 This can be included by making sure that you have [JitPack](https://jitpack.io) setup within your project. You can refer to the hosted versions of this library at [Mock-All](https://jitpack.io/#Kilemonn/Mock-All).
-Once added you can include this repository based on its release version (review to versions list) or with other syntax like <branch-name>-SNAPSHOT OR via <commit-hash> as the version segment of the depdency import.
 
 Here is an example in Gradle to include the dependency for test:
 ```
-testImplementation("com.github.Kilemonn:mock-all:0.1.2")
+testImplementation("com.github.Kilemonn:mock-all:0.1.4")
 ```
 
 ## Usage
 
-There are two components to this library that when used together can allow you to control which beans are excempt from the auto mocking and which beans will be created as `spy`s.
+There are two components to this library that when used together that allows you to control which beans are excempt from the auto mocking (allowing a default initialised bean to be used) and which beans will be created as a `spy`.
 
 Make sure you add the following configuration to your maven/gradle test configuration so that reflection can be used.
 Here is an example for gradle:
@@ -28,33 +25,41 @@ jvmArgs("--add-opens", "java.base/java.util=ALL-UNNAMED", "--add-opens", "java.b
 ### Mock all
 
 Firstly you need to mark the test class with the following annotation:
-```
+```java
 @TestExecutionListeners(MockAllExecutionListener::class)
 ```
 
-With only this setup all wired beans will be automatically mocked.
+**With only this annotation present all wired beans in the test class and linked in test contexts will be automatically mocked.**
 
-### Skip Mock
+### Skip Mocking (Create actual objects)
 
-In more scenarios you would only want to skip mocking on objects within the test class directly. Generally other context beans may not be in scope for direct testing. 
+There are likely scenarios where you would want to make sure actual objects are used instead of mocks. Most likely the class(es) you are actually testing.
 If you want to skip wiring of any object you can add this annotation to that member. This annotation is used later to drive spy beans.
-```
+
+```java
 @NotMocked
 ```
 
 ### Initialise as Spy
 
-Similarly to how objects are marked to skip, you can provide a list of classes for Object types that should be initialised as spy objects during the initialisation.
-```
+Similarly to how objects are marked to be created as actual objects, you can provide a list of classes that should be initialised as spy objects instead of mocks during the initialisation.
+```java
 @NotMocked([PermissionChecker.class, RoleChecker.class])
 ```
 
 Please refer to the unit tests for examples of how this mocking is put into action.
 
+**NOTE: The following will result in "MyObject" being created as a spy because it is provided in the spy object list.**
+```java
+@Autowired
+@NotMocked([MyObject.class, RoleChecker.class])
+private MyObject obj;
+```
+
 ### Accessing Mocked/Spyed Instances
 
 Mocked/Spied instances can be requested via the static method:
-```
+```java
 MockAllExecutionListener.getInstance(clazz: Class<*>): Any?
 ```
 
