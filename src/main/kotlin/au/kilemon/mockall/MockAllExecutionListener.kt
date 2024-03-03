@@ -3,6 +3,7 @@ package au.kilemon.mockall
 import jakarta.annotation.Resource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.Ordered
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
@@ -144,7 +145,8 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
                 {
                     spyKClasses.addAll(notMocked.spyClasses.asList())
 
-                    ReflectionUtils.setField(field, createOrGetInstance(currentClazz), createActualOrSpy(field.type.kotlin))
+                    val qualifier = field.getAnnotation(Qualifier::class.java)
+                    ReflectionUtils.setField(field, createOrGetInstance(currentClazz), createActualOrSpy(field.type.kotlin, qualifier))
                     mockAnnotationFields(field.type)
                 }
                 else
@@ -168,7 +170,7 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
      * @param kClass the incoming class that we should create an instance or [Mockito.spy] of
      * @return the constructed [Mockito.spy] OR instance of [T]
      */
-    fun <T : Any> createActualOrSpy(kClass: KClass<T>): T
+    fun <T : Any> createActualOrSpy(kClass: KClass<T>, qualifier: Qualifier? = null): T
     {
         val shouldSpyNotMocked = spyKClasses.contains(kClass)
         return if (shouldSpyNotMocked)
@@ -177,7 +179,20 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
         }
         else
         {
-            findZeroArgConstructor(kClass.java).newInstance()
+            var instance = if (qualifier != null)
+            {
+                getBeanByName(qualifier.value, kClass)
+            }
+            else
+            {
+                getExistingBean(kClass)
+            }
+
+            if (instance == null)
+            {
+                instance = findZeroArgConstructor(kClass.java).newInstance()
+            }
+            instance!!
         }
     }
 
@@ -247,5 +262,29 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
     fun injectableAnnotations(): List<Class<out Annotation>>
     {
         return listOf(Autowired::class.java, Resource::class.java, javax.annotation.Resource::class.java)
+    }
+
+    private fun <T : Any> getExistingBean(kClass: KClass<T>): T?
+    {
+        return try
+        {
+            testContext.applicationContext.getBean(kClass.java)
+        }
+        catch (ex: Exception)
+        {
+            null
+        }
+    }
+
+    private fun <T : Any> getBeanByName(name: String, kClass: KClass<T>): T?
+    {
+        return try
+        {
+            testContext.applicationContext.getBean(name, kClass.java)
+        }
+        catch (ex: Exception)
+        {
+            null
+        }
     }
 }

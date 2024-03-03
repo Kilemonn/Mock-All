@@ -12,4 +12,4 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
-annotation class NotMocked(val spyClasses: Array<KClass<*>>)
+annotation class NotMocked(val spyClasses: Array<KClass<*>> = [])
