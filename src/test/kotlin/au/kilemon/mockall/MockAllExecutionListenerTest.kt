@@ -6,10 +6,7 @@ import au.kilemon.mockall.models.ChildChildClass
 import au.kilemon.mockall.models.NotMockedSpy
 import au.kilemon.mockall.models.ab.AbstractBaseClass
 import au.kilemon.mockall.models.ab.AbstractChildClass
-import au.kilemon.mockall.tests.AbstractTest
-import au.kilemon.mockall.tests.BaseTest
-import au.kilemon.mockall.tests.ChildChildTest
-import au.kilemon.mockall.tests.ChildTest
+import au.kilemon.mockall.tests.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,7 +22,7 @@ import javax.annotation.Resource
  *
  * @author github.com/Kilemonn
  */
-class TestMockAllExecutionListener
+class MockAllExecutionListenerTest
 {
     /**
      * Setup before each method.
@@ -43,7 +40,7 @@ class TestMockAllExecutionListener
     @Test
     fun testPrepareTestInstance_onBaseClass()
     {
-        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(BaseTest()))
+        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(BaseClassTest()))
 
         val baseClass = MockAllExecutionListener.getInstance(BaseClass::class.java)
         Assertions.assertNotNull(baseClass)
@@ -62,7 +59,7 @@ class TestMockAllExecutionListener
     @Test
     fun testPrepareTestInstance_onChildClass()
     {
-        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(ChildTest()))
+        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(ChildClassTest()))
 
         Assertions.assertNull(MockAllExecutionListener.getInstance(BaseClass::class.java))
 
@@ -308,7 +305,7 @@ class TestMockAllExecutionListener
     @Test
     fun testPrepareTestInstance_onAbstractChildClass()
     {
-        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(AbstractTest()))
+        MockAllExecutionListener().prepareTestInstance(initialiseContextWithInstance(AbstractClassTest()))
 
         val childClass = MockAllExecutionListener.getInstance(AbstractChildClass::class.java)
         Assertions.assertNotNull(childClass)
@@ -336,7 +333,7 @@ class TestMockAllExecutionListener
     fun testNotMocked()
     {
         val listener = MockAllExecutionListener()
-        listener.prepareTestInstance(initialiseContextWithInstance(ChildChildTest()))
+        listener.prepareTestInstance(initialiseContextWithInstance(ChildChildClassTest()))
 
         Assertions.assertNotNull(MockAllExecutionListener.getInstance(ChildChildClass::class.java))
 
@@ -360,8 +357,11 @@ class TestMockAllExecutionListener
         listener.prepareTestInstance(initialiseContextWithInstance(notMockedSpy))
 
         Assertions.assertNotNull(MockAllExecutionListener.getInstance(NotMockedSpy::class.java))
-        Assertions.assertNotNull(MockAllExecutionListener.getInstance(Properties::class.java))
-        Assertions.assertTrue(isSpy(MockAllExecutionListener.getInstance(Properties::class.java)!!))
+
+        val properties = MockAllExecutionListener.getInstance(Properties::class.java)
+        Assertions.assertNotNull(properties)
+        Assertions.assertTrue(isSpy(properties!!))
+
         Assertions.assertNotNull(notMockedSpy.properties)
         Assertions.assertTrue(isSpy(notMockedSpy.properties))
     }
