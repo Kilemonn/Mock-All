@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.Kilemonn"
-version = "0.1.5" // Make sure this version matches the release version in the repo
+version = "0.1.6" // Make sure this version matches the release version in the repo
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
