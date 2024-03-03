@@ -266,7 +266,6 @@ class MockAllExecutionListener : TestExecutionListener, Ordered
 
     private fun <T : Any> getExistingBean(kClass: KClass<T>): T?
     {
-        // TODO: This will not qualify the specific bean if there are multiple available in the context
         return try
         {
             testContext.applicationContext.getBean(kClass.java)
