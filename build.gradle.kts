@@ -1,12 +1,41 @@
 plugins {
     kotlin("jvm") version "2.0.0"
     `java-library`
+    `maven-publish`
     jacoco
 }
 
 group = "com.github.Kilemonn"
 version = "0.1.6" // Make sure this version matches the release version in the repo
 java.sourceCompatibility = JavaVersion.VERSION_17
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = group.toString()
+            artifactId = rootProject.name
+            version = version
+
+            from(components["java"])
+
+            pom {
+                name.set("Mock All")
+                description.set("An extension library built on-top of mockito used to quickly mock all injected beans.")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("kilemonn")
+                    }
+                }
+            }
+        }
+    }
+}
 
 repositories {
     mavenCentral()
