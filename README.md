@@ -1,5 +1,7 @@
 # Mock-All
 
+[![CI Build](https://github.com/Kilemonn/Mock-All/actions/workflows/gradle.yml/badge.svg)](https://github.com/Kilemonn/Mock-All/actions/workflows/gradle.yml) [![Coverage](.github/badges/jacoco.svg)](https://github.com/Kilemonn/Mock-All/actions/workflows/gradle.yml)
+
 A test mock utility library built on top of [Mockito](https://github.com/mockito/mockito) to simplify context configuration for test classes.
 Ideally this library should not be required, but in scenarios where you want to setup isolated test configurations quickly this is an option especially when working with existing code with limited tests.
 

@@ -62,6 +62,7 @@ tasks.test {
     useJUnitPlatform()
     jvmArgs("--add-opens", "java.base/java.util=ALL-UNNAMED",
         "--add-opens", "java.base/java.lang=ALL-UNNAMED")
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.withType<Jar> {
@@ -70,4 +71,16 @@ tasks.withType<Jar> {
 
 kotlin {
     jvmToolchain(17)
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // Generate the report after the tests
+    reports {
+        xml.required.set(false)
+        csv.required.set(true)
+    }
 }
